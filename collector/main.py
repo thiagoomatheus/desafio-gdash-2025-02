@@ -30,7 +30,7 @@ WEATHER_OPTIONS = {
         "temperature_2m",        # Temperatura atual
         "relative_humidity_2m",  # Umidade
         "apparent_temperature",  # Sensação térmica
-        "precipitation",         # Está chovendo agora? (mm)
+        "precipitation",         # Chuva agora (mm)
         "weather_code",          # CÓDIGO DO ÍCONE (0=Sol, 1=Nublado, etc)
         "is_day",                # 1 = Dia, 0 = Noite
         "wind_speed_10m"         # Velocidade do vento
@@ -38,7 +38,9 @@ WEATHER_OPTIONS = {
     "hourly": [
         "temperature_2m",            # Gráfico de temperatura
         "precipitation_probability", # Gráfico de chance de chuva (%)
-        "relative_humidity_2m"       # Gráfico de umidade
+        "relative_humidity_2m",      # Gráfico de umidade
+        "shortwave_radiation",       # Radiação - ENERGIA SOLAR (W/m²)
+        "cloud_cover"                # Cobertura de nuvens (%)
     ],
     "daily": [
         "temperature_2m_max",        # Máxima do dia
