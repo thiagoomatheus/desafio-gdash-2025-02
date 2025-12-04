@@ -22,7 +22,7 @@ QUEUE_NAME = os.getenv('RABBITMQ_QUEUE', 'weather_data')
 API_URL = "https://api.open-meteo.com/v1/forecast"
 LAT = -23.3863
 LONG = -48.7244
-COLLECT_INTERVAL = 3600  # 1 hora
+COLLECT_INTERVAL = 300  # 5 minutos
 
 WEATHER_OPTIONS = {
     "timezone": "America/Sao_Paulo",
@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     job()
 
-    schedule.every(1).hours.do(job)
+    schedule.every(5).minutes.do(job)
 
     logger.info(f" ⏱️  Aguardando {COLLECT_INTERVAL // 60} minutos para a próxima coleta...")
 
