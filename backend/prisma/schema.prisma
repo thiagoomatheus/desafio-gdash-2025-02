@@ -1,11 +1,9 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mongodb"
-  url = env("DATABASE_URL")
 }
 
 model WeatherLog {
@@ -23,8 +21,10 @@ model WeatherLog {
   precipitation       Float
   isDay               Boolean
   windSpeed           Float
+  solarRadiation      Float?   @default(0)
 
-  fullData Json 
+  insights            Json
+  fullData            Json 
 
   createdAt DateTime @default(now())
 

@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { PrismaService } from '../prisma.service';
 import { WeatherPayload } from './interfaces/weather-data.interface';
 import * as ExcelJS from 'exceljs';
+import { WeatherInsightService } from './weather-insight.service';
 
 @Injectable()
 export class WeatherService {
-  constructor(private prisma: PrismaService) {}
+
+  private readonly logger = new Logger(WeatherService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    private weatherInsightService: WeatherInsightService
+  ) {}
 
   async create(createWeatherDto: CreateWeatherDto) {
     const data = createWeatherDto as unknown as WeatherPayload;
 
-    return this.prisma.weatherLog.create({
+    const currentSolar = data.hourly.shortwave_radiation[0] || 0;
+
+    const log = await this.prisma.weatherLog.create({
       data: {
         latitude: data.source_city_lat,
         longitude: data.source_city_long,
@@ -24,9 +33,17 @@ export class WeatherService {
         precipitation: data.current.precipitation,
         isDay: data.current.is_day === 1,
         windSpeed: data.current.wind_speed_10m,
+        solarRadiation: currentSolar,
+        insights: [],
         fullData: data as any, 
       },
     });
+
+    this.generateAndSaveInsight(log.id, data).catch(err => 
+      this.logger.error(`Erro ao gerar insight em background: ${err.message}`)
+    );
+
+    return log;
   }
 
   async findAll() {
@@ -46,8 +63,62 @@ export class WeatherService {
       precipitation: log.precipitation,
       isDay: log.isDay,
       wind: log.windSpeed,
+      solar: log.solarRadiation,
+      insights: log.insights,
       details: log.fullData as unknown as WeatherPayload
     }));
+  }
+
+  async findLatest() {
+    return this.prisma.weatherLog.findFirst({
+      orderBy: { collectedAt: 'desc' },
+    });
+  }
+
+  private async generateAndSaveInsight(logId: string, data: WeatherPayload) {
+
+    this.logger.log(`🤖 Gerando insights para o log ${logId}...`);
+
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+
+    const stats: {
+      _avg: { temperature: number | null; humidity: number | null; windSpeed: number | null; solarRadiation: number | null };
+      _max: { temperature: number | null; windSpeed: number | null; solarRadiation: number | null };
+      _min: { temperature: number | null };
+      _sum: { precipitation: number | null; solarRadiation: number | null };
+    } = await this.prisma.weatherLog.aggregate({
+      _avg: {
+        temperature: true,
+        humidity: true,
+        windSpeed: true,
+        solarRadiation: true
+      },
+      _max: {
+        temperature: true,
+        windSpeed: true,
+        solarRadiation: true
+      },
+      _min: {
+        temperature: true
+      },
+      _sum: {
+        precipitation: true,
+        solarRadiation: true
+      },
+      where: {
+        collectedAt: { gte: yesterday }
+      }
+    });
+    
+    const insights = await this.weatherInsightService.generateInsights(data, stats);
+
+    await this.prisma.weatherLog.update({
+      where: { id: logId },
+      data: { insights: insights as any }
+    });
+    
+    this.logger.log(`✅ Insights salvos para o log ${logId}!`);
   }
 
   private async getExportData() {

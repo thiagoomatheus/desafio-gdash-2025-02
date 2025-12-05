@@ -1,12 +1,17 @@
-import { Controller, Get, Post, Body, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, NotFoundException } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type { Response } from 'express';
+import { WeatherInsightService } from './weather-insight.service';
+import { WeatherPayload } from './interfaces/weather-data.interface';
 
 @Controller('api/weather')
 export class WeatherController {
-  constructor(private readonly weatherService: WeatherService) {}
+  constructor(
+    private readonly weatherService: WeatherService,
+    private readonly insightService: WeatherInsightService
+  ) {}
 
   @Post('logs')
   @ApiOperation({ summary: 'Recebe logs do Worker Go' })
@@ -46,5 +51,24 @@ export class WeatherController {
     });
 
     res.send(buffer);
+  }
+
+  @Get('insights')
+  @ApiOperation({ summary: 'Retorna os insights mais recentes gerados pela IA (Gemini)' })
+  async getInsights() {
+    const latestLog = await this.weatherService.findLatest();
+
+    if (!latestLog) {
+      throw new NotFoundException('Nenhum dado climático encontrado para gerar insights.');
+    }
+
+    if (latestLog.insights) {
+      return latestLog.insights;
+    }
+    
+    return {
+      summary: "Processando análise inteligente...",
+      cards: []
+    };
   }
 }
