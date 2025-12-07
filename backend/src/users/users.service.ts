@@ -44,8 +44,7 @@ export class UsersService implements OnModuleInit {
 
         return;
       }
-
-      console.log('User exists:', userExists);
+      
       this.logger.log(' ℹ️ Admin já existe, pulando criação.');
     } catch (error) {
       this.logger.error(`❌ Erro ao criar admin: ${error.message}`);
