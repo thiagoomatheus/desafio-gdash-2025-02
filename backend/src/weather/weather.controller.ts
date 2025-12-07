@@ -1,16 +1,15 @@
-import { Controller, Get, Post, Body, Res, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, NotFoundException, UseGuards } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CreateWeatherDto } from './dto/create-weather.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type { Response } from 'express';
-import { WeatherInsightService } from './weather-insight.service';
 import { WeatherPayload } from './interfaces/weather-data.interface';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('api/weather')
+@Controller('weather')
 export class WeatherController {
   constructor(
-    private readonly weatherService: WeatherService,
-    private readonly insightService: WeatherInsightService
+    private readonly weatherService: WeatherService
   ) {}
 
   @Post('logs')
@@ -20,12 +19,16 @@ export class WeatherController {
     return this.weatherService.create(createWeatherDto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('logs')
   @ApiOperation({ summary: 'Lista histórico para o Dashboard' })
   findAll() {
     return this.weatherService.findAll();
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('export/csv')
   @ApiOperation({ summary: 'Baixar histórico em CSV' })
   async exportCsv(@Res() res: Response) {
@@ -39,6 +42,8 @@ export class WeatherController {
     res.send(csvString);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('export/xlsx')
   @ApiOperation({ summary: 'Baixar histórico em Excel' })
   async exportExcel(@Res() res: Response) {
@@ -53,6 +58,8 @@ export class WeatherController {
     res.send(buffer);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('insights')
   @ApiOperation({ summary: 'Retorna os insights mais recentes gerados pela IA (Gemini)' })
   async getInsights() {

@@ -18,9 +18,12 @@ async function bootstrap() {
     .setDescription('API para gerenciamento de dados climáticos e usuários')
     .setVersion('1.0')
     .addTag('weather')
+    .addServer('/api')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+
+  app.setGlobalPrefix('api');
 
   await app.listen(3000);
 }
