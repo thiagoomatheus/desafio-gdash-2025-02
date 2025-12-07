@@ -49,5 +49,18 @@ services:
       - RABBITMQ_PASS=password
       - RABBITMQ_QUEUE=weather_data
 
+  backend:
+    build: ./backend
+    container_name: gdash_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=mongodb://mongo:27017/gdash_db?authSource=admin
+
 volumes:
   mongo_data:
