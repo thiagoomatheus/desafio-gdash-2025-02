@@ -28,7 +28,11 @@ export class SpacexService {
         date: launch.date_utc,
         success: launch.success,
         image: launch.links.patch.small || null,
-        details: launch.details ? launch.details.substring(0, 100) + '...' : 'Sem detalhes.',
+        details: launch.details || 'Sem detalhes.',
+        rocket_id: launch.rocket || null,
+        failures: launch.failures || [],
+        video_link: launch.links.webcast || null,
+        article_link: launch.links.article || null,
       }));
 
       return {
