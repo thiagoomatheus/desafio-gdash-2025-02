@@ -1,8 +1,8 @@
-import { Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
-import { User } from './schemas/user.schema';
+import { User, UserRole } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -37,7 +37,7 @@ export class UsersService implements OnModuleInit {
           email: adminEmail,
           password: adminPass,
           name: adminName,
-          
+          role: UserRole.ADMIN,
         });
         
         this.logger.log('✅ Admin criado com sucesso.');
@@ -59,7 +59,8 @@ export class UsersService implements OnModuleInit {
       email: data.email,
       password: hashedPassword,
       name: data.name,
-      deletedAt: null
+      deletedAt: null,
+      role: data.role || UserRole.USER,
     });
   }
 
@@ -78,6 +79,17 @@ export class UsersService implements OnModuleInit {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+    
+    const userToUpdate = await this.userModel.findById(id);
+    
+    if (!userToUpdate) throw new NotFoundException('Usuário não encontrado');
+    
+    if (userToUpdate.email === adminEmail) {
+        throw new ForbiddenException('O Administrador Root não pode ser modificado via painel.');
+    }
+
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
@@ -85,6 +97,18 @@ export class UsersService implements OnModuleInit {
   }
 
   async remove(id: string) {
+
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+
+    const user = await this.userModel.findById(id);
+    
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    if (user.email === adminEmail) {
+      throw new ForbiddenException('Não é permitido excluir o Administrador Root do sistema.');
+    }
+
     return this.userModel.findByIdAndUpdate(id, { deletedAt: new Date() });
   }
 }
