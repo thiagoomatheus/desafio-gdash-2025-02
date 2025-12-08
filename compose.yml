@@ -2,6 +2,7 @@ services:
   mongo:
     image: mongo:latest
     container_name: gdash_mongo
+    restart: always
     ports:
       - "27017:27017"
     volumes:
@@ -10,6 +11,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: gdash_rabbitmq
+    restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -61,6 +63,15 @@ services:
       - ./backend/.env
     environment:
       - DATABASE_URL=mongodb://mongo:27017/gdash_db?authSource=admin
+
+  frontend:
+    build: ./frontend
+    container_name: gdash_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
 
 volumes:
   mongo_data:
