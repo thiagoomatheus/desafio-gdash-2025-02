@@ -16,7 +16,7 @@ import {
   SheetDescription,
   SheetFooter
 } from "../components/ui/sheet";
-import { Rocket, ChevronLeft, ChevronRight, Calendar, Info, Youtube, FileText, X } from "lucide-react";
+import { Rocket, ChevronLeft, ChevronRight, Calendar, Info, Youtube, FileText } from "lucide-react";
 
 export default function SpacexPage() {
   const [page, setPage] = useState(1);

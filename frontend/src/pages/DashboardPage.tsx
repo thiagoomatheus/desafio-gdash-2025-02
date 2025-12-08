@@ -18,8 +18,8 @@ import { Badge } from '../components/ui/badge';
 import type { WeatherLog } from '../types';
 
 const getWeatherIcon = (code: number) => {
-  if (code <= 1) return <Sun className="h-4 w-4 text-orange-500" />;
-  if (code <= 3) return <Cloud className="h-4 w-4 text-slate-500" />;
+  if (code <= 1) return <Cloud className="h-4 w-4 text-slate-500" />; 
+  if (code <= 3) return <Sun className="h-4 w-4 text-orange-500" />;
   if (code <= 67) return <CloudRain className="h-4 w-4 text-blue-500" />;
   if (code <= 77) return <CloudSnow className="h-4 w-4 text-cyan-500" />;
   return <CloudLightning className="h-4 w-4 text-purple-500" />;
@@ -138,10 +138,10 @@ export default function Dashboard() {
       
       <section className="grid gap-4 md:grid-cols-7">
         
-        <Card className="col-span-7 lg:col-span-4 shadow-sm border-orange-100 w-[95vw] md:w-full">
+        <Card className="col-span-7 lg:col-span-4 shadow-sm border-orange-100 dark:border-orange-800 w-[95vw] md:w-full">
           <CardHeader>
             <CardTitle className="text-orange-950 flex items-center gap-2">
-              <Zap className="h-5 w-5 text-orange-500" />
+              <Zap className="h-5 w-5 text-orange-500 dark:text-orange-300" />
               Potencial de Geração Solar
             </CardTitle>
             <p className="text-sm text-slate-500">
