@@ -33,15 +33,27 @@ export class WeatherInsightService {
       return this.getFallbackInsights();
     }
 
+    const tomorrow = {
+      temp_max: data.daily.temperature_2m_max[1],
+      temp_min: data.daily.temperature_2m_min[1],
+      rain_sum: data.daily.precipitation_sum[1],
+      uv_max: data.daily.uv_index_max[1]
+    };
+
+    const index = new Date(data.collected_at).getHours();
+
     const contextData = {
       city: "Paranapanema, SP",
       current: {
         temp: data.current.temperature_2m,
         rain: data.current.precipitation,
-        uv: data.daily.uv_index_max[0] || 0,
-        solar: data.hourly.shortwave_radiation.slice(0, 6)
+        uv: data.hourly.uv_index[index] || 0,
+        solar: data.hourly.shortwave_radiation_instant[index] || 0,
+        precipitation_probability: data.hourly.precipitation_probability[index] || 0,
+        cloud_cover: data.current.cloud_cover || 0,
       },
-      history_24h: stats
+      history_24h: stats,
+      tomorrow: tomorrow
     };
 
     const prompt = `
@@ -49,7 +61,7 @@ export class WeatherInsightService {
       Analise os dados: ${JSON.stringify(contextData)}
       
       Gere (JSON):
-      1. "summary": Resumo de 1 frase comparando agora com a média de 24h.
+      1. "summary": Um resumo conciso (2-3 frases) sobre o clima atual, tendências para as próximas horas e impacto para a saúde.
       2. "cards": Array com 3 cards:
          - [Solar]: Analise o 'acumulado_solar' e 'sol_atual'. Diga se a geração foi Alta, Média ou Baixa.
          - [Clima]: Tendência de temperatura/chuva.
@@ -60,7 +72,7 @@ export class WeatherInsightService {
 
     try {
       const response = await this.aiClient.models.generateContent({
-        model: 'gemini-flash-lite-latest',
+        model: process.env.GEMINI_MODEL_NAME || "gemini-2.5-flash-lite",
         config: {
             responseMimeType: 'application/json',
         },

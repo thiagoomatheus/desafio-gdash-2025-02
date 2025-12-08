@@ -1,8 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNumber, IsString, ValidateNested, IsOptional } from 'class-validator';
+import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
 
 class CurrentWeatherDto {
+
+  @ApiProperty({ description: 'Data e hora da coleta em ISO', example: '2025-11-30T14:00:00Z' })
+  @IsString()
+  time: string;
+
   @ApiProperty({ description: 'Temperatura atual (°C)', example: 25.4 })
   @IsNumber()
   temperature_2m: number;
@@ -30,6 +35,10 @@ class CurrentWeatherDto {
   @ApiProperty({ description: 'Velocidade do vento (Km/h)', example: 12.5 })
   @IsNumber()
   wind_speed_10m: number;
+
+  @ApiProperty({ description: 'Cobertura de nuvens (%)', example: 40 })
+  @IsNumber()
+  cloud_cover: number;
 }
 
 class HourlyWeatherDto {
@@ -56,12 +65,12 @@ class HourlyWeatherDto {
   @ApiProperty({ description: 'Radiação solar relativo ao horário (W/m²)' })
   @IsArray()
   @IsNumber({}, { each: true })
-  shortwave_radiation: number[];
+  shortwave_radiation_instant: number[];
 
-  @ApiProperty( { description: 'Cobertura de nuvens relativo ao horário (%)', example: [20, 30] })
+  @ApiProperty({ description: 'Índice UV relativo ao horário', example: [3, 5] })
   @IsArray()
   @IsNumber({}, { each: true })
-  cloud_cover: number[];
+  uv_index: number[];
 }
 
 class DailyWeatherDto {

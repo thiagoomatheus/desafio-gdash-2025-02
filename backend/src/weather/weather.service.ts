@@ -20,8 +20,8 @@ export class WeatherService {
   async create(createWeatherDto: CreateWeatherDto) {
     const data = createWeatherDto as unknown as WeatherPayload;
 
-    const currentSolar = data.hourly.shortwave_radiation[0] || 0;
-
+    const index = new Date(data.current.time).getHours();
+    
     const log = new this.weatherModel({
       latitude: data.source_city_lat,
       longitude: data.source_city_long,
@@ -34,7 +34,10 @@ export class WeatherService {
       precipitation: data.current.precipitation,
       isDay: data.current.is_day === 1,
       windSpeed: data.current.wind_speed_10m,
-      solarRadiation: currentSolar,
+      solarRadiation: data.hourly.shortwave_radiation_instant?.[index] || 0,
+      cloudCover: data.current.cloud_cover,
+      uvIndex: data.hourly.uv_index?.[index] || 0,
+      precipitation_probability: data.hourly.precipitation_probability?.[index] || 0,
       insights: [],
       fullData: data as any
     });
@@ -63,6 +66,9 @@ export class WeatherService {
       isDay: log.isDay,
       wind: log.windSpeed,
       solar: log.solarRadiation,
+      cloud: log.cloudCover,
+      uv: log.uvIndex,
+      precipitation_probability: log.precipitation_probability,
       insights: log.insights,
       details: log.fullData as unknown as WeatherPayload
     }));
@@ -150,6 +156,10 @@ export class WeatherService {
         precipitation: 1,
         windSpeed: 1,
         condition: 1,
+        solarRadiation: 1,
+        uvIndex: 1,
+        cloudCover: 1,
+        precipitation_probability: 1,
         _id: 0
       })
       .exec();
@@ -158,11 +168,28 @@ export class WeatherService {
   async generateCsv(): Promise<string> {
     const data = await this.getExportData();
 
-    const header = 'Data,Cidade,Temperatura (C),Umidade (%),Chuva (mm),Vento (km/h),Condicao\n';
+    const header = 'Data,Hora,Cidade,Temp (C),Sensacao (C),Umidade (%),Vento (km/h),Chuva (mm),Chuva (%),Solar (W/m2),UV,Nuvens (%),Condicao\n';
+    
+    const rows = data.reverse().map(row => {
+      const dateIso = new Date(row.collectedAt).toISOString();
+      const datePart = dateIso.split('T')[0];
+      const timePart = dateIso.split('T')[1].slice(0, 8);
 
-    const rows = data.map(row => {
-      const date = row.collectedAt.toISOString();
-      return `${date},${row.city},${row.temperature},${row.humidity},${row.precipitation},${row.windSpeed},${row.condition}`;
+      return [
+        datePart,
+        timePart,
+        row.city,
+        row.temperature,
+        row.condition,
+        row.humidity,
+        row.windSpeed,
+        row.precipitation,
+        row.precipitation_probability,
+        row.solarRadiation,
+        row.uvIndex,
+        row.cloudCover,
+        row.condition
+      ].join(',');
     }).join('\n');
 
     return header + rows;
@@ -180,17 +207,27 @@ export class WeatherService {
       { header: 'Temp (°C)', key: 'temp', width: 15 },
       { header: 'Umidade (%)', key: 'humidity', width: 15 },
       { header: 'Chuva (mm)', key: 'rain', width: 15 },
+      { header: 'Chuva (%)', key: 'rainProb', width: 15 },
       { header: 'Vento (km/h)', key: 'wind', width: 15 },
+      { header: 'Condicao', key: 'condition', width: 15 },
+      { header: 'Radiação Solar (W/m²)', key: 'solar', width: 20 },
+      { header: 'UV', key: 'uv', width: 10 },
+      { header: 'Nuvens (%)', key: 'cloud', width: 15 },
     ];
 
     data.forEach(item => {
       sheet.addRow({
-        date: item.collectedAt,
+        date: item.collectedAt.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }),
         city: item.city,
         temp: item.temperature,
         humidity: item.humidity,
         rain: item.precipitation,
         wind: item.windSpeed,
+        condition: item.condition,
+        solar: item.solarRadiation,
+        uv: item.uvIndex,
+        cloud: item.cloudCover,
+        rainProb: item.precipitation_probability,
       });
     });
 

@@ -18,6 +18,9 @@ export class WeatherLog {
   @Prop() isDay: boolean;
   @Prop() windSpeed: number;
   @Prop({ default: 0 }) solarRadiation: number;
+  @Prop() uvIndex: number;
+  @Prop() cloudCover: number;
+  @Prop() precipitation_probability: number;
 
   @Prop({ type: Object }) insights: any;
   @Prop({ type: Object }) fullData: any;

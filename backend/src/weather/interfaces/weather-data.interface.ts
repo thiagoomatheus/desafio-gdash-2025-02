@@ -4,6 +4,7 @@ export interface WeatherPayload {
   collected_at: string;
   
   current: {
+    time: string;
     temperature_2m: number;
     relative_humidity_2m: number;
     apparent_temperature: number;
@@ -11,6 +12,7 @@ export interface WeatherPayload {
     weather_code: number;
     is_day: number;
     wind_speed_10m: number;
+    cloud_cover: number;
   };
   
   hourly: {
@@ -18,8 +20,8 @@ export interface WeatherPayload {
     temperature_2m: number[];
     precipitation_probability: number[];
     relative_humidity_2m: number[];
-    shortwave_radiation: number[];
-    cloud_cover: number[];
+    shortwave_radiation_instant: number[];
+    uv_index: number[];
   };
   
   daily: {
