@@ -27,20 +27,21 @@ COLLECT_INTERVAL = 300  # 5 minutos
 WEATHER_OPTIONS = {
     "timezone": "America/Sao_Paulo",
     "current": [
-        "temperature_2m",        # Temperatura atual
-        "relative_humidity_2m",  # Umidade
-        "apparent_temperature",  # Sensação térmica
-        "precipitation",         # Chuva agora (mm)
-        "weather_code",          # CÓDIGO DO ÍCONE (0=Sol, 1=Nublado, etc)
-        "is_day",                # 1 = Dia, 0 = Noite
-        "wind_speed_10m"         # Velocidade do vento
+        "temperature_2m",           # Temperatura atual
+        "relative_humidity_2m",     # Umidade
+        "apparent_temperature",     # Sensação térmica
+        "precipitation",            # Chuva agora (mm)
+        "weather_code",             # CÓDIGO DO ÍCONE (0=Sol, 1=Nublado, etc)
+        "is_day",                   # 1 = Dia, 0 = Noite
+        "wind_speed_10m",           # Velocidade do vento
+        "cloud_cover"               # Cobertura de nuvens (%)
     ],
     "hourly": [
-        "temperature_2m",            # Gráfico de temperatura
-        "precipitation_probability", # Gráfico de chance de chuva (%)
-        "relative_humidity_2m",      # Gráfico de umidade
-        "shortwave_radiation",       # Radiação - ENERGIA SOLAR (W/m²)
-        "cloud_cover"                # Cobertura de nuvens (%)
+        "temperature_2m",               # Gráfico de temperatura
+        "precipitation_probability",    # Gráfico de chance de chuva (%)
+        "relative_humidity_2m",         # Gráfico de umidade
+        "shortwave_radiation_instant",  # Radiação - ENERGIA SOLAR (W/m²)
+        "uv_index"                      # Índice UV
     ],
     "daily": [
         "temperature_2m_max",        # Máxima do dia
