@@ -1,3 +1,104 @@
-node_modules
+# --------------------------------------------------------------------
+# GERAL & SISTEMA OPERACIONAL
+# --------------------------------------------------------------------
 .DS_Store
+Thumbs.db
+*.log
+tmp/
+temp/
+
+# --------------------------------------------------------------------
+# SEGURANÇA & AMBIENTE (CRUCIAL)
+# --------------------------------------------------------------------
+# Ignora todos os arquivos .env para não vazar chaves
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+collector/.env
+worker/.env
+
+# Permite subir arquivos de exemplo (boa prática)
+!.env.example
+
+# --------------------------------------------------------------------
+# NODE.JS (Backend & Frontend)
+# --------------------------------------------------------------------
+node_modules/
+dist/
+build/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+
+# NestJS specific
+.nest/
+
+# Next.js / Vite / React specific
+.next/
+.cache/
+public/hot
+
+# --------------------------------------------------------------------
+# PYTHON (Collector)
+# --------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes Virtuais
+venv/
+.venv/
+env/
+.env/
+
+# Ferramentas e Distribuição
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# --------------------------------------------------------------------
+# GO (Worker)
+# --------------------------------------------------------------------
+# Binários compilados (windows, mac, linux)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Binário específico do nosso worker
+worker/worker
+worker/main
+
+# Vendor (caso use, mas com go mod geralmente não comitamos vendor)
+vendor/
+
+# --------------------------------------------------------------------
+# IDEs & EDITORES
+# --------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --------------------------------------------------------------------
+# DOCKER & INFRA
+# --------------------------------------------------------------------
+docker-compose.override.yml
+.docker/
+
+*.csv
+*.xlsx
