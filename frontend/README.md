@@ -13,9 +13,10 @@ A interface do usuário do sistema GDASH. Uma Single Page Application (SPA) mode
 
 ## ⚙️ Configuração
 
-Crie um arquivo `.env` se precisar alterar a URL da API:
+Este projeto foi configurado (`vite.config.ts`) para ler as variáveis de ambiente do arquivo `.env` localizado na **raiz do monorepo**.
 
-```env
+A variável principal é:
+```ini
 VITE_API_URL="http://localhost:3000/api"
 ```
 

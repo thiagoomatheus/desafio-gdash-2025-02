@@ -8,6 +8,7 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  envDir: '../',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

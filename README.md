@@ -51,15 +51,39 @@ graph LR
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/thiagoomatheus/desafio-gdash-2025-02.git
+   git clone https://github.com/SEU_USUARIO/desafio-gdash.git
+   cd desafio-gdash
+
+   git checkout thiago-seu-sobrenome
    ```
 
-2. **Configure o ambiente:**
-   Crie um arquivo `.env` na raiz do projeto e insira sua chave da IA:
-   ```ini
-   GEMINI_API_KEY="SUA_CHAVE_AQUI"
-   JWT_SECRET="seu_segredo_seguro"
-   ```
+### 2. Configurar Variáveis de Ambiente
+Crie um único arquivo `.env` na **raiz do projeto**. Todas as aplicações (Back, Front, Worker, Collector) lerão deste arquivo.
+
+```ini
+# --- CONFIGURAÇÕES GERAIS ---
+JWT_SECRET="segredo_super_secreto_gdash_2025"
+
+# --- BANCO DE DADOS ---
+DATABASE_URL="mongodb://localhost:27017/gdash_db?authSource=admin"
+
+# --- INTELIGÊNCIA ARTIFICIAL ---
+# Gere sua chave em: https://aistudio.google.com/
+GEMINI_API_KEY="COLE_SUA_CHAVE_AQUI"
+
+# --- USUÁRIO ADMIN PADRÃO (Seed) ---
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="123456"
+
+# --- INFRAESTRUTURA (RabbitMQ) ---
+RABBITMQ_DEFAULT_USER="user"
+RABBITMQ_DEFAULT_PASS="password"
+RABBITMQ_HOST="localhost"
+RABBITMQ_URL="amqp://user:password@localhost:5672/"
+
+# --- FRONTEND ---
+VITE_API_URL="http://localhost:3000/api"
+```
 
 3. **Suba os containers:**
    ```bash

@@ -4,7 +4,7 @@ services:
     container_name: gdash_mongo
     restart: always
     ports:
-      - "27018:27017"
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
 
@@ -15,9 +15,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: password
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -33,10 +32,12 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
-      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672/
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
       - RABBITMQ_QUEUE=weather_data
-      - API_URL=http://backend:3000/api/weather/logs
+      - API_URL=http://backend:3000/api
 
   collector:
     build: ./collector
@@ -45,10 +46,12 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_USER=user
-      - RABBITMQ_PASS=password
+      - RABBITMQ_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_PASS=${RABBITMQ_DEFAULT_PASS}
       - RABBITMQ_QUEUE=weather_data
 
   backend:
@@ -56,20 +59,24 @@ services:
     container_name: gdash_backend
     restart: always
     ports:
-      - "3015:3000"
+      - "3000:3000"
     depends_on:
       - mongo
     env_file:
-      - ./backend/.env
+      - .env
     environment:
       - DATABASE_URL=mongodb://mongo:27017/gdash_db?authSource=admin
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     container_name: gdash_frontend
     restart: always
     ports:
-      - "5175:5173"
+      - "5173:5173"
     depends_on:
       - backend
 

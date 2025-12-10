@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -21,9 +22,9 @@ type WeatherData struct {
 }
 
 var (
-	RabbitMQURL  = os.Getenv("RABBITMQ_URL")   // Ex: amqp://user:pass@host:5672/
-	QueueName    = os.Getenv("RABBITMQ_QUEUE") // Ex: weather_data
-	ApiURL       = os.Getenv("API_URL")        // Ex: http://backend:3000/api/weather
+	RabbitMQURL  	= os.Getenv("RABBITMQ_URL")   // Ex: amqp://user:pass@host:5672/
+	QueueName    	= os.Getenv("RABBITMQ_QUEUE") // Ex: weather_data
+	BackendBaseURL 	= os.Getenv("API_URL")        // Ex: http://backend:3000
 )
 
 func failOnError(err error, msg string) {
@@ -65,8 +66,8 @@ func main() {
 		QueueName = "weather_data"
 	}
 
-	if ApiURL == "" {
-		ApiURL = "http://localhost:3000/api/weather/logs" 
+	if BackendBaseURL == "" {
+		BackendBaseURL = "http://localhost:3000" 
 	}
 
 	conn, err := connectRabbitMQ()
@@ -147,8 +148,13 @@ func main() {
 }
 
 func sendToBackend(jsonData []byte) (int, error) {
+
+	fullURL, err := url.JoinPath(BackendBaseURL, "/weather/logs")
+	if err != nil {
+		return 0, err
+	}
 	
-	req, err := http.NewRequest("POST", ApiURL, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return 0, err
 	}

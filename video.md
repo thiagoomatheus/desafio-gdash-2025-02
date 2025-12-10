@@ -1,0 +1,1 @@
+Optei por implementar Soft Delete no banco de dados por questões de segurança e integridade referencial. O usuário é marcado como deletado e perde o acesso, mas o registro é mantido. Em um cenário real de produção, eu implementaria um job agendado para excluir fisicamente esses registros após 30 dias ou conforme a LGPD."

@@ -11,24 +11,9 @@ O núcleo do sistema GDASH. Uma API RESTful construída com **NestJS** responsá
 - **Docs:** Swagger (OpenAPI)
 - **Utils:** ExcelJS (Exportação), Axios (Proxy HTTP)
 
-## ⚙️ Variáveis de Ambiente
+## ⚙️ Configuração
 
-Crie um arquivo `.env` na raiz desta pasta (ou use o do Docker Compose):
-
-```env
-# Configs de Aplicação
-JWT_SECRET="sua_chave_secreta_aqui"
-
-GEMINI_API_KEY="sua_chave_de_api_aqui"
-GEMINI_MODEL_NAME="modelo_exemplo"
-
-# Admin
-ADMIN_EMAIL="admin@example.com"
-ADMIN_PASSWORD="123456"
-
-# URL MongoDB
-DATABASE_URL="mongodb://localhost:27017/nome_do_banco_de_dados"
-```
+Este serviço foi configurado para ler as variáveis de ambiente diretamente do arquivo `.env` localizado na **raiz do monorepo** (`../.env`). Não é necessário criar um arquivo `.env` dentro desta pasta.
 
 ## 🚀 Como Rodar
 
